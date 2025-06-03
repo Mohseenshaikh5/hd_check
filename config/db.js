@@ -1,5 +1,5 @@
-const { Pool } = require('pg');
-require('dotenv').config();
+// const { Pool } = require('pg');
+// require('dotenv').config();
 
 // const pool = new Pool({
 //   user: process.env.DB_USER,
@@ -12,11 +12,14 @@ require('dotenv').config();
 //   }
 // });
 
+const { Pool } = require('pg');
+require('dotenv').config();
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false // Required for Render
-  }
+    rejectUnauthorized: false, // Required for Render's self-signed certificate
+  },
 });
 
 pool.connect()
