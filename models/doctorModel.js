@@ -1,5 +1,29 @@
 const pool = require('../config/db');
 
+// const createDoctor = async (doctorData) => {
+
+//   const {
+//     first_name,
+//     last_name,
+//     specialization,
+//     clinic_address,
+//     phone,
+//     campus_date
+//   } = doctorData;
+
+//   console.log('add doctor>>>>>',doctorData)
+//   const query = `
+//     INSERT INTO doctors 
+//     ( first_name, last_name, specialization, clinic_address, phone, campus_date)
+//     VALUES ($1, $2, $3, $4, $5, $6)
+//     RETURNING *;
+//   `;
+
+//   const values = [first_name, last_name, specialization, clinic_address, phone, campus_date];
+//   const result = await pool.query(query, values);
+//   return result.rows[0];
+// };
+
 const createDoctor = async (doctorData) => {
   const {
     first_name,
@@ -7,39 +31,39 @@ const createDoctor = async (doctorData) => {
     specialization,
     clinic_address,
     phone,
-    campus_date
+    campus_date,
+    user_id
   } = doctorData;
 
-  console.log('add doctor>>>>>',doctorData)
   const query = `
     INSERT INTO doctors 
-    ( first_name, last_name, specialization, clinic_address, phone, campus_date)
-    VALUES ($1, $2, $3, $4, $5, $6)
+    (first_name, last_name, specialization, clinic_address, phone, campus_date, user_id)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING *;
   `;
 
-  const values = [first_name, last_name, specialization, clinic_address, phone, campus_date];
+  const values = [first_name, last_name, specialization, clinic_address, phone, campus_date, user_id];
   const result = await pool.query(query, values);
   return result.rows[0];
 };
 
-
-const getAllDoctors = async (searchTerm = '') => {
-  let query = 'SELECT * FROM doctors';
-  const values = [];
+const getDoctorsByUserIdWithSearch = async (userId, searchTerm = '') => {
+  let query = 'SELECT * FROM doctors WHERE user_id = $1';
+  const values = [userId];
 
   if (searchTerm) {
-    query += ' WHERE first_name ILIKE $1 OR last_name ILIKE $1 OR phone ILIKE $1';
+    query += ' AND (first_name ILIKE $2 OR last_name ILIKE $2 OR phone ILIKE $2)';
     values.push(`%${searchTerm}%`);
   }
 
-  query += ' ORDER BY id DESC'; // or created_at if added
+  query += ' ORDER BY id DESC'; // or created_at if you prefer
 
   const result = await pool.query(query, values);
   return result.rows;
 };
 
+
 module.exports = {
   createDoctor,
-  getAllDoctors
+  getDoctorsByUserIdWithSearch
 };

@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { addDoctor, listDoctors } = require('../controllers/doctorController');
+const { addDoctor, getDoctorsByUserId } = require('../controllers/doctorController');
+const verifyToken = require('../middleware/authMiddleware');
 
-router.post('/add', addDoctor);
-router.get('/list', listDoctors);
+// Protected routes with verifyToken
+router.post('/add', verifyToken, addDoctor);
+router.get('/list/:userId', verifyToken, getDoctorsByUserId);
 
 module.exports = router;
     
